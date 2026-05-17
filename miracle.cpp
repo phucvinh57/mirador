@@ -14,38 +14,15 @@
 using namespace miral;
 using namespace miral::toolkit;
 
-namespace
-{
-    // Determine the path to the configuration file. The search order is:
-    // 1. $XDG_CONFIG_HOME/miracle.config
-    // 2. The directory of the executable/miracle.config
-    // 3. miracle.config in the current working directory
-    std::string config_path()
-    {
-        constexpr char config_filename[] = "miracle.config";
-        if (auto const *xdg_config_home = std::getenv("XDG_CONFIG_HOME"); xdg_config_home && *xdg_config_home)
-            return (std::filesystem::path{xdg_config_home} / config_filename).string();
-
-        std::error_code ec;
-        auto const executable_path = std::filesystem::read_symlink("/proc/self/exe", ec);
-        if (!ec)
-            return (executable_path.parent_path() / config_filename).string();
-
-        return config_filename;
-    }
-}
-
 int main(int argc, char const *argv[])
 {
     ExternalClientLauncher launcher;
-    const std::string config_file = config_path();
 
-    MirRunner runner{argc, argv, config_file.c_str()};
+    MirRunner runner{argc, argv, "miracle.config"};
+    std::string terminal_cmd{"x-terminal-emulator"};
 
-    auto const builtin_keybinds = [&launcher, &runner](MirKeyboardEvent const *ev)
+    auto const keybinds = [&launcher, &runner, &terminal_cmd](MirKeyboardEvent const *ev)
     {
-        std::string terminal_cmd{"ptyxis"};
-
         // Skip anything but down presses
         if (mir_keyboard_event_action(ev) != mir_keyboard_action_down)
             return false;
@@ -78,7 +55,7 @@ int main(int argc, char const *argv[])
 
     return runner.run_with({set_window_management_policy<MinimalWindowManager>(),
                             launcher,
-                            miral::AppendKeyboardEventFilter(builtin_keybinds),
+                            miral::AppendKeyboardEventFilter(keybinds),
                             miral::ConfigurationOption{run_startup_apps, "startup-app", "Commands to run on startup"},
                             miral::Decorations::always_csd()});
 }
