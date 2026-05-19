@@ -42,7 +42,7 @@ int main(int argc, char const *argv[])
     auto run_startup_apps = [&launcher, &config](std::vector<std::string> const &commands)
     {
         auto startup_apps = config.get("startup-app");
-        if (!startup_apps.has_value())
+        if (!startup_apps)
             return;
         for (auto const &command : startup_apps.value())
             launcher.launch(command);
@@ -52,5 +52,5 @@ int main(int argc, char const *argv[])
                             launcher,
                             miral::AppendKeyboardEventFilter(keybinds),
                             ConfigurationOption{run_startup_apps, "startup-app", "Commands to run on startup (may be specified multiple times)"},
-                            miral::Decorations::always_csd()});
+                            miral::Decorations::prefer_csd()});
 }
