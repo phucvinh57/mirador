@@ -10,8 +10,28 @@ add_executable(mirage
     mirage.cc
     mirage_config.cc
     mirage_keybind.cc
-    mirage_window_manager.cpp)
+    stage_manager.cc
+    window_manager.cpp)
 target_compile_definitions(mirage PRIVATE MIR_LOG_COMPONENT="mirage")
+
+find_program(CLANG_FORMAT clang-format)
+if(CLANG_FORMAT)
+    set(MIRAGE_FORMAT_SOURCES
+        mirage.cc
+        mirage_config.cc
+        mirage_config.h
+        mirage_keybind.cc
+        mirage_keybind.h
+        stage_manager.cc
+        stage_manager.h
+        window_manager.cpp
+        window_manager.h)
+    add_custom_target(format
+        COMMAND ${CLANG_FORMAT} -i ${MIRAGE_FORMAT_SOURCES}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Formatting C++ sources with clang-format")
+endif()
+
 set(MIRAGE_HOME_CONFIG "$ENV{HOME}/.config/mirage.config")
 add_custom_command(
     OUTPUT "${MIRAGE_HOME_CONFIG}"

@@ -7,8 +7,7 @@
 #include <string_view>
 #include <utility>
 
-namespace
-{
+namespace {
 auto trim(std::string_view value) -> std::string_view
 {
     auto const first = value.find_first_not_of(" \t\r\n");
@@ -18,7 +17,7 @@ auto trim(std::string_view value) -> std::string_view
     auto const last = value.find_last_not_of(" \t\r\n");
     return value.substr(first, last - first + 1);
 }
-}
+} // namespace
 
 void MirageConfig::set(std::string key, Values values)
 {
@@ -42,7 +41,6 @@ auto MirageConfig::get(std::string const& key) const -> std::optional<Values>
     return std::nullopt;
 }
 
-
 auto MirageConfig::get_one(std::string const& key) const -> std::optional<std::string>
 {
     auto values = get(key);
@@ -52,13 +50,13 @@ auto MirageConfig::get_one(std::string const& key) const -> std::optional<std::s
     return std::nullopt;
 }
 
-auto MirageConfig::search_prefix(std::string const& prefix) const -> std::vector<std::pair<std::string, Values>>
+auto MirageConfig::search_prefix(std::string const& prefix) const
+    -> std::vector<std::pair<std::string, Values>>
 {
     std::vector<std::pair<std::string, Values>> results;
     auto const prefix_view = std::string_view{prefix};
 
-    for (auto it = this->data.lower_bound(prefix); it != data.end(); ++it)
-    {
+    for (auto it = this->data.lower_bound(prefix); it != data.end(); ++it) {
         if (!std::string_view{it->first}.starts_with(prefix_view))
             break;
 
@@ -75,8 +73,7 @@ void MirageConfig::load(std::istream& stream, std::filesystem::path const& path)
     std::string line;
     std::size_t line_number = 0;
 
-    while (std::getline(stream, line))
-    {
+    while (std::getline(stream, line)) {
         ++line_number;
 
         auto const trimmed = trim(line);
@@ -84,22 +81,16 @@ void MirageConfig::load(std::istream& stream, std::filesystem::path const& path)
             continue;
 
         auto const separator = trimmed.find('=');
-        if (separator == std::string_view::npos)
-        {
-            mir::log_warning(
-                "Ignoring invalid config line %zu in %s: missing '='",
-                line_number,
-                path.c_str());
+        if (separator == std::string_view::npos) {
+            mir::log_warning("Ignoring invalid config line %zu in %s: missing '='", line_number,
+                             path.c_str());
             continue;
         }
 
         auto const key = trim(trimmed.substr(0, separator));
-        if (key.empty())
-        {
-            mir::log_warning(
-                "Ignoring invalid config line %zu in %s: empty key",
-                line_number,
-                path.c_str());
+        if (key.empty()) {
+            mir::log_warning("Ignoring invalid config line %zu in %s: empty key", line_number,
+                             path.c_str());
             continue;
         }
 

@@ -25,11 +25,12 @@ public:
     void set(std::string key, Values values);
     void set(std::string key, std::string value);
 
-    auto get(std::string const &key) const -> std::optional<Values>;
-    auto get_one(std::string const &key) const -> std::optional<std::string>;
-    auto search_prefix(std::string const &prefix) const -> std::vector<std::pair<std::string, Values>>;
+    auto get(std::string const& key) const -> std::optional<Values>;
+    auto get_one(std::string const& key) const -> std::optional<std::string>;
+    auto search_prefix(std::string const& prefix) const
+        -> std::vector<std::pair<std::string, Values>>;
 
-    void load(std::istream &stream, std::filesystem::path const &path);
+    void load(std::istream& stream, std::filesystem::path const& path);
     auto add_dependency(DependencyConfig* dependency) -> MirageConfig*;
 
 private:

@@ -10,11 +10,10 @@
 
 #include "mirage_config.h"
 
-namespace miral
-{
-    class ExternalClientLauncher;
-    class MirRunner;
-}
+namespace miral {
+class ExternalClientLauncher;
+class MirRunner;
+} // namespace miral
 
 struct Keybind
 {
@@ -27,14 +26,12 @@ class KeybindConfig : public DependencyConfig
 {
 private:
     std::vector<Keybind> keybinds;
-    auto action_for(MirKeyboardEvent const *event) const -> std::optional<std::string>;
+    auto action_for(MirKeyboardEvent const* event) const -> std::optional<std::string>;
 
 public:
-    void load(MirageConfig *config) override;
-    auto handle(
-        MirKeyboardEvent const *event,
-        miral::MirRunner &runner,
-        miral::ExternalClientLauncher &launcher) const -> bool;
+    void load(MirageConfig* config) override;
+    auto handle(MirKeyboardEvent const* event, miral::MirRunner& runner,
+                miral::ExternalClientLauncher& launcher) const -> bool;
 };
 
 #endif // __MIRAGE_KEYBIND_H__
